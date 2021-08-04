@@ -92,7 +92,7 @@ private:
     static void updateCoefficients(Coefficients& old, const Coefficients& replacements);
     
     template<int Index, typename ChainType, typename CoefficientType>
-    void update(ChainType& chain, const CoefficientType& coefficients)
+    void updateChain(ChainType& chain, const CoefficientType& coefficients)
     {
         updateCoefficients(chain.template get<Index>().coefficients, coefficients[Index]);
         chain.template setBypassed<Index>(false);
@@ -112,22 +112,27 @@ private:
         {
             case Slope_48:
             {
-                update<3>(chain, cutCoefficients);
+                updateChain<3>(chain, cutCoefficients);
             }
             case Slope_36:
             {
-                update<2>(chain, cutCoefficients);
+                updateChain<2>(chain, cutCoefficients);
             }
             case Slope_24:
             {
-                update<1>(chain, cutCoefficients);
+                updateChain<1>(chain, cutCoefficients);
             }
             case Slope_12:
             {
-                update<0>(chain, cutCoefficients);
+                updateChain<0>(chain, cutCoefficients);
             }
         }
     }
+    
+    void updateLowCutFilter(const ChainSettings& chainSettings);
+    void updateHighCutFilter(const ChainSettings& chainSettings);
+    
+    void updateFilters();
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessor)
