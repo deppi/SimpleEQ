@@ -38,6 +38,11 @@ enum ChainPositions
     HighCut
 };
 
+using Coefficients = Filter::CoefficientsPtr;
+void updateCoefficients(Coefficients& old, const Coefficients& replacements);
+
+Coefficients makePeakFilter(const ChainSettings& chainSettings, double sampleRate);
+
 //==============================================================================
 /**
 */
@@ -88,8 +93,6 @@ private:
     MonoChain leftChain, rightChain;
     
     void updatePeakFilter(const ChainSettings& chainSettings);
-    using Coefficients = Filter::CoefficientsPtr;
-    static void updateCoefficients(Coefficients& old, const Coefficients& replacements);
     
     template<int Index, typename ChainType, typename CoefficientType>
     void updateChain(ChainType& chain, const CoefficientType& coefficients)
