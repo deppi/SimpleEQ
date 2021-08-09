@@ -27,11 +27,24 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
         addAndMakeVisible(comp);
     }
     
+    const auto& params = audioProcessor.getParameters();
+    for (auto param : params)
+    {
+        param->addListener(this);
+    }
+    
+    startTimerHz(60);
+    
     setSize (600, 400);
 }
 
 SimpleEQAudioProcessorEditor::~SimpleEQAudioProcessorEditor()
 {
+    const auto& params = audioProcessor.getParameters();
+    for (auto param : params)
+    {
+        param->removeListener(this);
+    }
 }
 
 //==============================================================================
@@ -61,7 +74,7 @@ void SimpleEQAudioProcessorEditor::paint (juce::Graphics& g)
         auto freq = mapToLog10 (double(i) / double(w), 20.0, 20000.0);
         
         if (! monoChain.isBypassed<ChainPositions::Peak>())
-            mag *= peak.coefficients->getPhaseForFrequency(freq, sampleRate);
+            mag *= peak.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         
         if (! lowCut.isBypassed<0>())
             mag *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
@@ -81,7 +94,7 @@ void SimpleEQAudioProcessorEditor::paint (juce::Graphics& g)
         if (! highCut.isBypassed<3>())
             mag *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
         
-        mags[i] = Decibels::decibelsToGain(mag);
+        mags[i] = Decibels::gainToDecibels(mag);
     }
     
     Path responseCurve;
@@ -139,9 +152,13 @@ void SimpleEQAudioProcessorEditor::timerCallback()
 {
     if (parametersChanged.compareAndSetBool(false, true))
     {
+        DBG ("hiii");
         // update monochain
+        auto chainSettings = getChainSettings(audioProcessor.apvts);
+        auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
+        updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
         // signal repaint
-        
+        repaint();
     }
 }
 
