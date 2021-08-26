@@ -78,7 +78,7 @@ void RotarySliderWithLabels::paint(juce::Graphics& g)
 //    g.drawRect(getLocalBounds());
 //    g.setColour(Colours::yellow);
 //    g.drawRect(sliderBounds);
-//    UI DEBUG CODE
+//    UI DEBUG CODE for sliders
     
     getLookAndFeel().drawRotarySlider(g,
                                       sliderBounds.getX(),
@@ -339,13 +339,13 @@ void ResponseCurveComponent::resized()
         g.drawHorizontalLine(y, left, right);
     }
     
-//    g.drawRect(getAnalysisArea());
     g.setColour(Colours::lightgrey);
     const int fontHeight = 10;
     g.setFont(fontHeight);
     
     for (int i = 0; i < freqs.size(); ++i)
     {
+        // draw horizontal Hz labels
         auto f = freqs[i];
         auto x = xs[i];
         
@@ -373,6 +373,7 @@ void ResponseCurveComponent::resized()
     
     for (auto gDb : gain)
     {
+        // draw right vertical labels
         auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
         String str;
         auto sign = gDb > 0 ? "+" : "";
@@ -387,6 +388,16 @@ void ResponseCurveComponent::resized()
         
         g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::lightgrey);
         
+        g.drawFittedText(str, r, juce::Justification::centred, 1);
+        
+        // draw left vertical labels
+        str.clear();
+        str << (gDb - 24.f);
+        r.setX(1);
+        textWidth =  g.getCurrentFont().getStringWidth(str);
+        r.setSize(textWidth, fontHeight);
+        
+        g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::grey);
         g.drawFittedText(str, r, juce::Justification::centred, 1);
     }
 }
