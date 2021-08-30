@@ -172,7 +172,7 @@ struct LookAndFeel : juce::LookAndFeel_V4
                            float sliderPosProportional,
                            float rotaryStartAngle,
                            float rotaryEndAngle,
-                           juce::Slider&);
+                           juce::Slider&) override;
     
     void drawToggleButton (juce::Graphics& g,
                            juce::ToggleButton& toggleButton,
@@ -262,6 +262,10 @@ private:
 };
 
 //==============================================================================
+
+struct PowerButton : juce::ToggleButton {};
+struct AnalyzerButton : juce::ToggleButton {};
+
 /**
 */
 class SimpleEQAudioProcessorEditor : public juce::AudioProcessorEditor
@@ -300,7 +304,8 @@ private:
         lowCutSlopeSliderAttachment,
         highCutSlopeSliderAttachment;
     
-    juce::ToggleButton lowCutBypassedButton, highCutBypassedButton, peakBypassedButton, analyzerEnabledButton;
+    PowerButton lowCutBypassedButton, highCutBypassedButton, peakBypassedButton;
+    AnalyzerButton analyzerEnabledButton;
     
     using ButtonAttachment = APVTS::ButtonAttachment;
     ButtonAttachment lowCutBypassButtonAttachment,
